@@ -10,7 +10,7 @@ namespace Twitter_Sentiment_API_App.Models
     {
         public string TweetText { get; set; }
         public string TweetId { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string TweetedBy { get; set; }
         public int RetweetCount { get; set; }
     }

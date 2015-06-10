@@ -6,30 +6,51 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Twitter_Sentiment_API_App.Helpers
 {
     public static class AzureMLService
     {
-
         private const string BaseUriSentiment = "https://api.datamarket.azure.com/data.ashx/amla/text-analytics/v1/GetSentiment?Text=";
         private const string BaseUriKeyPhrases = "https://api.datamarket.azure.com/data.ashx/amla/text-analytics/v1/GetKeyPhrases?Text=";
 
-        public static async Task<double> GetSentiment(string Text, string AzureMarketplaceAccountKey)
+        public static async Task<float> GetSentiment(string Text, string AzureMarketplaceAccountKey)
         {
-            dynamic data = await CallAzureAPI(BaseUriSentiment + Text, AzureMarketplaceAccountKey);
-            return (data != null) ? Convert.ToDouble(data.Score) : null;
+            try
+            {
+                dynamic data = await CallAzureAPI(BaseUriSentiment + HttpUtility.UrlEncode(Text), AzureMarketplaceAccountKey);
+                if (data != null)
+                {
+                    return (float)data.Score;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public static async Task<List<string>> GetKeyPhrases(string Text, string AzureMarketplaceAccountKey)
         {
-            dynamic data = await CallAzureAPI(BaseUriKeyPhrases + Text, AzureMarketplaceAccountKey);
-            var phrases = new List<string>();
-            foreach (string keyPhrase in data.KeyPhrases)
+            try
             {
-                phrases.Add(keyPhrase);
+                dynamic data = await CallAzureAPI(BaseUriKeyPhrases + HttpUtility.UrlEncode(Text), AzureMarketplaceAccountKey);
+                var phrases = new List<string>();
+                foreach (string keyPhrase in data.KeyPhrases)
+                {
+                    phrases.Add(keyPhrase);
+                }
+                return phrases;
             }
-            return phrases;
+            catch
+            {
+                return null;
+            }
         }
 
         private static async Task<dynamic> CallAzureAPI(string FullUri, string AzureMarketplaceAccountKey)

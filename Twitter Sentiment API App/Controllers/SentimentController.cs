@@ -39,9 +39,9 @@ namespace Twitter_Sentiment_API_App.Controllers
             {
                 Tweet = Tweet,
                 KeyPhrases = keyPhrases,
-                Score = score
+                Score = score,
+                AllKeyPhrases  = string.Join(",", keyPhrases.ToArray())
             };
-
         }
 
     }
